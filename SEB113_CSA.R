@@ -334,9 +334,13 @@ head(df.fort.pm_ws_wd_wswd)
 # =========== JUST THE INTERACTION TERMs ========= #
 ## 5. log.pm2.5 ~ Wind speed : wind direction. (log.pm2.5 ~ WS x WD)  (y = B1X1Z1 + B2X1Z2 + ....)
 lm.pm_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws:wd.label -1)
+lm.pm_wswd.for.r2 <- lm(data=air.quality.clinton, log.pm2.5 ~ ws:wd.label)
 lm.pm_wswd
 # summary of lm
 summary(lm.pm_wswd)
+
+summary(lm.pm_wswd.for.r2) # for r2 ONLY
+
 # Confident Interval
 tidy(lm.pm_wswd, conf.int = T)
 # Check lm whether the residuals are normally distributed
@@ -347,6 +351,10 @@ head(df.fort.pm_wswd)
 # =========== JUST THE INTERACTION TERM ========= #
 ## 6. log.pm2.5 ~ Wind speed : wind direction. (log.pm2.5 ~ WS x WD)  (y = B_0 + B_1X1Z1 + ....)
 lm.pm_wd_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label-1 + ws:wd.label)
+lm.pm_wd_wswd.for.r2 <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label + ws:wd.label)
+summary(lm.pm_wd_wswd.for.r2) # for r2 ONLY
+
+
 lm.pm_wd_wswd
 # summary of lm
 summary(lm.pm_wd_wswd)
@@ -360,12 +368,12 @@ head(df.fort.pm_wd_wswd)
 
 
 # Model fitness
-# function to check r2
+# What is the coefficient of determination, R2, for these models?
 r2.check <- function(lm){
   r2 <- broom::glance(lm)$r.squared
   return(r2)
 }
-# another function to check r2, for lm with no intercept
+# another function to check r2, for linear model with no intercept
 r2.noint.check <- function(lm){
   1 - sum(residuals(lm)^2) / sum((air.quality.clinton$log.pm2.5 - mean(air.quality.clinton$log.pm2.5))^2)
 }
@@ -412,17 +420,21 @@ ggplot(dat.resid.melt, aes(x = value)) +
        y="Density")
 
 
-# model 6
+# Model 6
+# Make a scatter plot of the fitted values vs the residuals, 
+# including  a smooth line of best fit to determine whether the residuals have a mean of zero
 ggplot(df.fort.pm_wd_wswd, aes(y=.resid, x=.fitted)) +
   geom_point() +
   geom_smooth(se=FALSE) 
+# Does it look like there’s unexplained variation in the residuals? Why or why not?
+
 
 # Make a quantile-quantile plot of the standardised residuals from the interaction model.
 ggplot(df.fort.pm_wd_wswd, aes(sample=.stdresid)) +
   stat_qq() +
   geom_abline(slope = 1, intercept = 0)
 
-# anova to compare both model
+# Use the F test via the anova() function to compare both model
 anova(lm.pm_wd_wswd, lm.pm_ws_wd_wswd)
 
 
@@ -456,7 +468,7 @@ anova(lm.null, lm.pm_ws)
 # Make a scatter plot of the fitted values vs the residuals, 
 # including  a smooth line of best fit to determine whether the residuals have a mean of zero
 ggplot(df.fort.pm_ws, aes(y=.resid, x=.fitted)) +
-  geom_point() +
+  geom_point(alpha=0.01) +
   geom_smooth(se=FALSE) 
 
 # Augment the fortified data frame with the WD variable from the df. 
