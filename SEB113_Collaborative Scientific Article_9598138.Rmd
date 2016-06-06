@@ -1,6 +1,7 @@
 ---
 title: "SEB113 Collaborative Scientific Article (CSA)"
-author: "Yun Kai Siow 9598138"
+author: "Yun Kai Siow, 9598138"
+date: "Sunday, June 12, 2016"
 fontsize: 11pt
 output:
   pdf_document:
@@ -18,10 +19,21 @@ output:
 geometry: margin=1in
 linestretch: 1.5 
 bibliography: references.bib
+objects: SEB113_CSA_Objects.RData, SEB113_CSA.R
 ---
 
+```{r 'prep', eval=TRUE, echo=FALSE} 
+# load in the R objects needed for the report.
+load(file="SEB113_CSA_Objects.RData")
+
+# load required packages
+suppressPackageStartupMessages(library(openair))
+# suppressPackageStartupMessages(library(knitcitations))
+# suppressPackageStartupMessages(library(Gmisc))
+```
+
 ```{r include=FALSE}
-if(!exists("air.quality.clinton", mode="list")) source("SEB113_CSA.R")
+# if(!exists("air.quality.clinton", mode="list")) source("SEB113_CSA.R")
 # source('SEB113_CSA.R')
 ```
 
@@ -198,6 +210,13 @@ knitr::kable(head(mtcars), caption = "Title of the table")
 ### Estimate model parameters
 <!-- Provide estimates together with confidence intervals and relevant hypothesis tests. Include Rcode used. -->
 
+
+
+
+
+```{r}
+
+```
 
 
 ### Assess model fit

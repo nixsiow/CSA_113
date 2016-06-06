@@ -489,6 +489,8 @@ ggplot(df.fort.pm_ws, aes(x=wd.label, y=.resid)) +
 
 
 
-
+# save objects --------------------
+# create a new directory for the report stuff
+save.image(file="SEB113_CSA_Objects.RData", safe = TRUE)
 
 # ===== END OF SCRIPT =====
