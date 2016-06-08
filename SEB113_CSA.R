@@ -294,10 +294,12 @@ head(df.fort.pm_ws)
 
 # ======================================== #
 ## 2. log.pm2.5 ~ Wind direction (y = B_0 + B_2X2)
-lm.pm_wd <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label - 1)
-lm.pm_wd
+(lm.pm_wd <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label - 1))
+(lm.pm_wd.forR2 <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label))
+
 # summary of lm
 summary(lm.pm_wd)
+summary(lm.pm_wd.forR2)
 # Confident Interval
 tidy(lm.pm_wd, conf.int = T)
 # Check lm whether the residuals are normally distributed
@@ -306,10 +308,11 @@ head(df.fort.pm_wd)
 
 # ======================================== #
 ## 3. log.pm2.5 ~ Wind Speed + Wind direction (y = B_0 + B_1X1 + B_2X2)
-lm.pm_ws_wd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws+wd.label - 1)
-lm.pm_ws_wd
+(lm.pm_ws_wd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws+wd.label - 1))
+(lm.pm_ws_wd.forR2 <- lm(data=air.quality.clinton, log.pm2.5 ~ ws+wd.label))
 # summary of lm
 summary(lm.pm_ws_wd)
+summary(lm.pm_ws_wd.forR2)
 # Confident Interval
 tidy(lm.pm_ws_wd, conf.int = T)
 # Check lm whether the residuals are normally distributed
@@ -317,12 +320,13 @@ df.fort.pm_ws_wd <- fortify(lm.pm_ws_wd)
 head(df.fort.pm_ws_wd)
 
 
-# =========== Including Interaction term ============ #
+# =========== Both terms and with Interaction term ============ #
 ## 4. log.pm2.5 ~ Wind speed * wind direction  (y = B1X1 + B2X2 + .... + BiX1X2 + BiX1Xi)
-lm.pm_ws_wd_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws*wd.label-1)
-lm.pm_ws_wd_wswd
+(lm.pm_ws_wd_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws*wd.label-1))
+(lm.pm_ws_wd_wswd.forR2 <- lm(data=air.quality.clinton, log.pm2.5 ~ ws*wd.label))
 # summary of lm
 summary(lm.pm_ws_wd_wswd)
+summary(lm.pm_ws_wd_wswd.forR2)
 # Confident Interval
 tidy(lm.pm_ws_wd_wswd, conf.int = T)
 # Check lm whether the residuals are normally distributed
@@ -333,13 +337,11 @@ head(df.fort.pm_ws_wd_wswd)
 
 # =========== JUST THE INTERACTION TERMs ========= #
 ## 5. log.pm2.5 ~ Wind speed : wind direction. (log.pm2.5 ~ WS x WD)  (y = B1X1Z1 + B2X1Z2 + ....)
-lm.pm_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws:wd.label -1)
-lm.pm_wswd.for.r2 <- lm(data=air.quality.clinton, log.pm2.5 ~ ws:wd.label)
-lm.pm_wswd
+(lm.pm_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws:wd.label -1))
+(lm.pm_wswd.forR2 <- lm(data=air.quality.clinton, log.pm2.5 ~ ws:wd.label))
 # summary of lm
 summary(lm.pm_wswd)
-
-summary(lm.pm_wswd.for.r2) # for r2 ONLY
+summary(lm.pm_wswd.forR2) # for r2 ONLY
 
 # Confident Interval
 tidy(lm.pm_wswd, conf.int = T)
@@ -348,22 +350,18 @@ df.fort.pm_wswd <- fortify(lm.pm_wswd)
 head(df.fort.pm_wswd)
 
 
-# =========== JUST THE INTERACTION TERM ========= #
-## 6. log.pm2.5 ~ Wind speed : wind direction. (log.pm2.5 ~ WS x WD)  (y = B_0 + B_1X1Z1 + ....)
-lm.pm_wd_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label-1 + ws:wd.label)
-lm.pm_wd_wswd.for.r2 <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label + ws:wd.label)
-summary(lm.pm_wd_wswd.for.r2) # for r2 ONLY
-
-
-lm.pm_wd_wswd
+# =========== WD AND THE INTERACTION TERM ========= #
+## 6. log.pm2.5 ~ Wind direction + Wind speed : wind direction. (log.pm2.5 ~ WD + WS x WD)  (y = B_0 + WD + B_1X1Z1 + ....)
+(lm.pm_wd_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label-1 + ws:wd.label))
+(lm.pm_wd_wswd.forR2 <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label + ws:wd.label))
 # summary of lm
 summary(lm.pm_wd_wswd)
+summary(lm.pm_wd_wswd.forR2) # for r2 ONLY
 # Confident Interval
 tidy(lm.pm_wd_wswd, conf.int = T)
 # Check lm whether the residuals are normally distributed
 df.fort.pm_wd_wswd <- fortify(lm.pm_wd_wswd)
 head(df.fort.pm_wd_wswd)
-
 
 
 
@@ -373,22 +371,24 @@ r2.check <- function(lm){
   r2 <- broom::glance(lm)$r.squared
   return(r2)
 }
+
 # another function to check r2, for linear model with no intercept
-r2.noint.check <- function(lm){
-  1 - sum(residuals(lm)^2) / sum((air.quality.clinton$log.pm2.5 - mean(air.quality.clinton$log.pm2.5))^2)
-}
+# r2.noint.check <- function(lm){
+#   1 - sum(residuals(lm)^2) / sum((air.quality.clinton$log.pm2.5 - mean(air.quality.clinton$log.pm2.5))^2)
+# }
 
 # df to visualise all the model's r2
 Model <- c("M1", "M2", "M3", "M4", "M5", "M6")
-R2s <- c(r2.check(lm.pm_ws), 
-        r2.noint.check(lm.pm_wd), 
-        r2.noint.check(lm.pm_ws_wd),
-        r2.noint.check(lm.pm_ws_wd_wswd),
-        r2.noint.check(lm.pm_wswd),
-        r2.noint.check(lm.pm_wd_wswd))
 
-models.fitness.df <- data.frame(cbind(Model, R2s))
-models.fitness.df
+R2s <- c(r2.check(lm.pm_ws), 
+        r2.check(lm.pm_wd.forR2), 
+        r2.check(lm.pm_ws_wd.forR2),
+        r2.check(lm.pm_ws_wd_wswd.forR2),
+        r2.check(lm.pm_wswd.forR2),
+        r2.check(lm.pm_wd_wswd.forR2)
+        )
+
+(models.fitness.df <- data.frame(cbind(Model, R2s)))
 
 ## ========== Diagnostics for residuals ========== ##
 # residuals of each model into one big dataframe
@@ -424,7 +424,7 @@ ggplot(dat.resid.melt, aes(x = value)) +
 # Make a scatter plot of the fitted values vs the residuals, 
 # including  a smooth line of best fit to determine whether the residuals have a mean of zero
 ggplot(df.fort.pm_wd_wswd, aes(y=.resid, x=.fitted)) +
-  geom_point() +
+  geom_point(aes(color=wd.label), alpha=0.3) +
   geom_smooth(se=FALSE) 
 # Does it look like there’s unexplained variation in the residuals? Why or why not?
 
@@ -435,7 +435,11 @@ ggplot(df.fort.pm_wd_wswd, aes(sample=.stdresid)) +
   geom_abline(slope = 1, intercept = 0)
 
 # Use the F test via the anova() function to compare both model
-anova(lm.pm_wd_wswd, lm.pm_ws_wd_wswd)
+# model 5 and model 6 has diff r2, but close. Anova to compare both of them
+# model 5 nested inside of model 6
+# use the fitted model with intercept when using anova comparison
+models.fitness.df
+anova(lm.pm_wswd.forR2, lm.pm_wd_wswd.forR2)
 
 
 
@@ -450,7 +454,7 @@ anova(lm.pm_wd_wswd, lm.pm_ws_wd_wswd)
 
 ## EXPERIMENTAL ZONE ====================
 
-# Fit a null model that only charactersises the average time of flight.
+# Fit a null model that only charactersises the average pm2.5.
 lm.null <- lm(data=air.quality.clinton, log.pm2.5 ~ 1)
 
 # summary of the null model
@@ -459,26 +463,25 @@ summary(lm.null)
 # What is the sum of square of the errors (residual sum of squares) for the null model?
 sum(residuals(lm.null)^2)
 
-# What is the sum of square of the errors (residual sum of squares) for the model involving width?
-sum(residuals(lm.pm_ws)^2)
+# What is the sum of square of the errors (residual sum of squares)?
+sum(residuals(lm.pm_wd_wswd)^2)
 
 # Use the anova() function to perform the hypothesis test comparing with width model to the null model.
-anova(lm.null, lm.pm_ws)
-
-# Make a scatter plot of the fitted values vs the residuals, 
-# including  a smooth line of best fit to determine whether the residuals have a mean of zero
-ggplot(df.fort.pm_ws, aes(y=.resid, x=.fitted)) +
-  geom_point(alpha=0.01) +
-  geom_smooth(se=FALSE) 
+anova(lm.null, lm.pm_wd_wswd)
 
 # Augment the fortified data frame with the WD variable from the df. 
-df.fort.pm_ws$wd.label <- air.quality.clinton$wd.label
-head(df.fort.pm_ws)
+# df.fort.pm_wd_wswd$wd.label <- air.quality.clinton$wd.label
+# head(df.fort.pm_wd_wswd)
 
 # Plot the residuals against the WD, including  smooth line of best fit to determine whether the residuals have a mean of zero with respect to changes in the WD
-ggplot(df.fort.pm_ws, aes(x=wd.label, y=.resid)) + 
-  geom_smooth(se=FALSE, method="lm") + 
-  geom_point()
+ggplot(df.fort.pm_wd_wswd, aes(x=wd.label, y=.resid)) + 
+  geom_point(aes(color=wd.label), alpha=0.3) +
+  theme_bw() +
+  theme(legend.position="none") +
+  labs(title = "PM2.5 concentration varies according to wind direction", 
+       subtitle = "Site location: Latitude: -23.8701; Longitude: 151.2216", 
+       x = "Wind Direction", 
+       y = "Residuals")
 
 
 
@@ -491,6 +494,6 @@ ggplot(df.fort.pm_ws, aes(x=wd.label, y=.resid)) +
 
 # save objects --------------------
 # create a new directory for the report stuff
-save.image(file="SEB113_CSA_Objects.RData", safe = TRUE)
+save.image(file="data/SEB113_CSA_Objects.RData", safe = TRUE)
 
 # ===== END OF SCRIPT =====

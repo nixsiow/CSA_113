@@ -8,6 +8,7 @@ output:
     fig_caption: yes
     number_sections: no
     toc: yes
+    highlight: pygments
   md_document:
     variant: markdown_github
   html_document:
@@ -18,24 +19,32 @@ output:
     fig_caption: yes
 geometry: margin=1in
 linestretch: 1.5 
-bibliography: references.bib
+bibliography: bib/references.bib
+csl: bib/apa.csl
 objects: SEB113_CSA_Objects.RData, SEB113_CSA.R
 ---
 
 ```{r 'prep', eval=TRUE, echo=FALSE} 
 # load in the R objects needed for the report.
-load(file="SEB113_CSA_Objects.RData")
+load(file="data/SEB113_CSA_Objects.RData")
 
-# load required packages
+# load required libraries, notice the library function has been wrapped in the `supressPackageStartupMessages` function so that R does not return anything in its console.
+suppressPackageStartupMessages(library(knitr))
 suppressPackageStartupMessages(library(openair))
-# suppressPackageStartupMessages(library(knitcitations))
-# suppressPackageStartupMessages(library(Gmisc))
+suppressPackageStartupMessages(library(stargazer))
+
+# for citation
+suppressPackageStartupMessages(library(knitcitations))
+cleanbib()
+
+# force r codes to softwrap
+opts_chunk$set(tidy.opts=list(width.cutoff=60))
 ```
 
-```{r include=FALSE}
-# if(!exists("air.quality.clinton", mode="list")) source("SEB113_CSA.R")
-# source('SEB113_CSA.R')
-```
+
+
+
+
 
 ## 1. Aim {-}
 <!-- 0.5 pp -->
@@ -98,7 +107,7 @@ grViz("
   }", width = 250)
 ```
 
-![Conceptual Model](Conceptual_Model.jpg)
+![Conceptual Model](image/Conceptual_Model.jpg)
 **Figure 1: Visual conceptual model of how PM2.5 concentration in the air varies according to wind speed and wind direction.**
 
 
@@ -150,8 +159,12 @@ $$
 <!-- for analysis. eg transformation of variables, how outliers were treated, adjusting by an offset, or focusing on part of the data (<1 pp) -->
 
 
+
+
 ### Dataset
 <!-- included in a separate file in CSV format (must contain all data). Also include R code for reading data in. An extract of data should be included in the article (up to 1 pp); -->
+
+
 
 
 ### Data dictionary
@@ -207,6 +220,8 @@ knitr::kable(head(mtcars), caption = "Title of the table")
 
 
 
+
+
 ### Estimate model parameters
 <!-- Provide estimates together with confidence intervals and relevant hypothesis tests. Include Rcode used. -->
 
@@ -214,8 +229,13 @@ knitr::kable(head(mtcars), caption = "Title of the table")
 
 
 
-```{r}
 
+```{r 'dataframe', eval=FALSE, echo=TRUE}
+head(air.quality.clinton)
+```
+
+```{r 'dataframe1', eval=TRUE, echo=FALSE, tidy=TRUE}
+stargazer(head(air.quality.clinton), type="text", summary=FALSE, title="Have a look on first few rows of data", align=TRUE)
 ```
 
 
@@ -262,6 +282,37 @@ knitr::kable(head(mtcars), caption = "Title of the table")
 
 
 
+#### Formulate a ANOVA hypothesis:
+$$
+\begin{aligned}
+H_0 : \beta_1 &= 0\\
+H_1 : \beta_1 &\neq 0
+\end{aligned}
+$$  
+
+#### Interpretation of ANOVA for regression models
+The p value from this hypothesis test therefore represents the probability of obtaining an F statistic at least as big as what was seen if the restricted model explained the same amount of variation as the full model. 
+
+Rejecting the null hypothesis leads us to conclude that the inclusion of the extra terms in the full model explains more variation than if we had not included these terms.
+
+The sum of square of the errors (residual sum of squares) for model 5?
+```{r}
+sum(residuals(lm.pm_wswd.forR2)^2)
+```
+
+There are `` residual degrees of freedom for the model 5?
+
+
+The sum of square of the errors (residual sum of squares) for the model involving wind direction.
+```{r}
+sum(residuals(lm.pm_wd_wswd.forR2)^2)
+```
+
+```{r}
+anova(lm.pm_wswd.forR2, lm.pm_wd_wswd.forR2)
+```
+
+
 
 
 ```{r, echo=FALSE, fig.cap='Global average across Oceean Health Index goals.', fig.width=5, fig.height=5}
@@ -274,13 +325,26 @@ polarPlot(air.quality.clinton, pollutant = 'pm2.5', resolution="fine")
 
 <!-- ############################################ -->
 
+```{r 'fetchCit', echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+citep(citation("ggmap"))
+citep(citation())
+citep(citation("openair"))
+```
 
-Application written in the R programming language [@RCoreTeam] using the Shiny framework [@Chang2015].
 
-D. Kahle and H. Wickham. [@ggmap]: Spatial Visualization with ggplot2
+All analyses were conducted using the statistical software program, R [@R_Core_Team_2016].
 
-Carslaw D and Ropkins K (2016). [@openair]: Open-source tools for the analysis of air
+D. Kahle and H. Wickham. [@Kahle_2013]: Spatial Visualization with ggplot2
+
+Carslaw D and Ropkins K (2016). [@Carslaw_2012]: Open-source tools for the analysis of air
 pollution data.
+
+
+```{r 'bib', echo=FALSE, message=FALSE}
+# write the bibliography
+write.bibtex(file="bib/references.bib")
+```
+
 
 \newpage
 ## References
