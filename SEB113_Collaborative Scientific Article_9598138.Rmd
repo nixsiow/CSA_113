@@ -222,6 +222,44 @@ knitr::kable(head(mtcars), caption = "Title of the table")
 
 
 
+
+
+#### Formulate a ANOVA hypothesis:
+$$
+\begin{aligned}
+H_0 : \beta_1 &= 0\\
+H_1 : \beta_1 &\neq 0
+\end{aligned}
+$$  
+
+#### Interpretation of ANOVA for regression models
+The p value from this hypothesis test therefore represents the probability of obtaining an F statistic at least as big as what was seen if the restricted model explained the same amount of variation as the full model. 
+
+Rejecting the null hypothesis leads us to conclude that the inclusion of the extra terms in the full model explains more variation than if we had not included these terms.
+
+The sum of square of the errors (residual sum of squares) for model 5?
+```{r}
+sum(residuals(lm.pm_wswd.forR2)^2)
+```
+
+There are `` residual degrees of freedom for the model 5?
+
+
+The sum of square of the errors (residual sum of squares) for the model involving wind direction.
+```{r}
+sum(residuals(lm.pm_wd_wswd.forR2)^2)
+```
+
+```{r}
+anova(lm.pm_wswd.forR2, lm.pm_wd_wswd.forR2)
+```
+
+
+
+
+
+
+
 ### Estimate model parameters
 <!-- Provide estimates together with confidence intervals and relevant hypothesis tests. Include Rcode used. -->
 
@@ -280,37 +318,6 @@ stargazer(head(air.quality.clinton), type="text", summary=FALSE, title="Have a l
 ### Compare
 <!-- to other relevant findings -->
 
-
-
-#### Formulate a ANOVA hypothesis:
-$$
-\begin{aligned}
-H_0 : \beta_1 &= 0\\
-H_1 : \beta_1 &\neq 0
-\end{aligned}
-$$  
-
-#### Interpretation of ANOVA for regression models
-The p value from this hypothesis test therefore represents the probability of obtaining an F statistic at least as big as what was seen if the restricted model explained the same amount of variation as the full model. 
-
-Rejecting the null hypothesis leads us to conclude that the inclusion of the extra terms in the full model explains more variation than if we had not included these terms.
-
-The sum of square of the errors (residual sum of squares) for model 5?
-```{r}
-sum(residuals(lm.pm_wswd.forR2)^2)
-```
-
-There are `` residual degrees of freedom for the model 5?
-
-
-The sum of square of the errors (residual sum of squares) for the model involving wind direction.
-```{r}
-sum(residuals(lm.pm_wd_wswd.forR2)^2)
-```
-
-```{r}
-anova(lm.pm_wswd.forR2, lm.pm_wd_wswd.forR2)
-```
 
 
 
