@@ -24,8 +24,9 @@
 5. **References:** What resources did you use to help justify claims that don't arise from your analysis? Do you need to cite an article/book/R package for where your data came from? All references listed must have been used somewhere in the text.
 
 6. **Appendix:** Where you put the stuff that's not the main story of the article but might help clarify things such as the iterative process of model fitting, or a review of other studies that deal with the same topic.
-Also attach your R script. It needs to contain only the code used to generate the analysis you've done. Don't include broken code or code for figures that you didn't end up using.
 
+
+**Attach your R script**. It needs to contain only the code used to generate the analysis you've done. Don't include broken code or code for figures that you didn't end up using.
 
 ### Note
 **Analysis section**
