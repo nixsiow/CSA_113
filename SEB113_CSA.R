@@ -87,7 +87,7 @@ summary(air.quality.clinton)
 ## ==================== ## 
 
 # summarise variables
-summary(air.quality.clinton[,c(5,6,8)])
+summary(air.quality.clinton[,c(6,8,9)])
 
 # Plot the pm2.5 concentration in air in histrogram
 pm1 <- ggplot(data=air.quality.clinton, aes(x=pm2.5)) + 
@@ -202,8 +202,8 @@ dat <- ggplot_build(pm_wd.plot)$data[[1]]
                                   face="bold"),
         strip.background = element_rect(fill = "white",
                                         colour = "white")) +
-  labs(title = "PM2.5 concentration correlated to Wind speed", 
-       subtitle = "further split it into 8 different wind direction facet", 
+  labs(title = "PM2.5 concentration plot against Wind Speed", 
+       subtitle = "", 
        x = expression(paste("Wind Speed (",ms^-1,")")), 
        y = expression(paste(log," ",PM[2.5]," (",mu,g,m^-3,")")))
 )
@@ -237,7 +237,7 @@ global_labeller <- labeller(
                                   face="bold"),
         strip.background = element_rect(fill = "white",
                                         colour = "white")) +
-  labs(title = "PM2.5 concentration correlated to Wind speed", 
+  labs(title = "PM2.5 concentration varies with Wind speed and Wind Direction", 
        subtitle = "further split it into 8 different wind direction facet", 
        x = expression(paste("Wind Speed (",ms^-1,")")), 
        y = expression(paste(log," ",PM[2.5]," (",mu,g,m^-3,")"))
@@ -407,8 +407,8 @@ Resid.histogram <- ggplot(df.fort.pm_wd_wswd, aes(x = .resid)) +
                                   face="bold"),
         strip.background = element_rect(fill = "white",
                                         colour = "white")) +
-  labs(title="Residuals of each model against normal distribution",
-       subtitle="bla bla bla",
+  labs(title="Residuals from the model 5 plot against Normal Distribution",
+       subtitle="Histogram of the residuals with density on the y axis with assumption of normal distribution of the residuals",
        x="Residual",
        y="Density")
 
@@ -439,7 +439,7 @@ qqplot <- ggplot(df.fort.pm_wd_wswd, aes(sample=.stdresid)) +
   theme(legend.position="none",
         plot.title = element_text(lineheight=.8, 
                                   face="bold")) +
-  labs(title="Normality of the residuals, quantile-quantile (QQ) plot of the standardised residuals.",
+  labs(title="Normality of the residuals, \nquantile-quantile (QQ) plot of the standardised residuals.",
        subtitle="The quantiles of the values are plotted against the quantiles of a standard Normal.",
        x="Theoretical (Z ~ N(0,1))",
        y="Sample")
@@ -475,105 +475,6 @@ anova(lm.pm_wswd.intercept, lm.pm_wd_wswd.intercept)
 anova(lm.pm_wd_wswd.intercept, lm.pm_ws_wd_wswd.intercept)
 
 
-
-
-## EXPERIMENTAL ZONE ====================
-
-# Fit a null model that only charactersises the average pm2.5.
-lm.null <- lm(data=air.quality.clinton, log.pm2.5 ~ 1)
-
-# summary of the null model
-summary(lm.null)
-
-# What is the sum of square of the errors (residual sum of squares) for the null model?
-sum(residuals(lm.null)^2)
-
-# What is the sum of square of the errors (residual sum of squares)?
-sum(residuals(lm.pm_wd_wswd)^2)
-
-# Use the anova() function to perform the hypothesis test comparing with width model to the null model.
-anova(lm.null, lm.pm_wd_wswd)
-
-# Augment the fortified data frame with the WD variable from the df. 
-# df.fort.pm_wd_wswd$wd.label <- air.quality.clinton$wd
-# head(df.fort.pm_wd_wswd)
-
-# Plot the residuals against the WD, including smooth line of best fit to determine whether the residuals have a mean of zero with respect to changes in the WD
-ggplot(df.fort.pm_wd_wswd, aes(x=wd.label, y=.resid)) + 
-  geom_point(aes(color=wd.label), alpha=0.3) +
-  theme_bw() +
-  theme(legend.position="none") +
-  labs(title = "PM2.5 concentration varies according to wind direction", 
-       subtitle = "Site location: Latitude: -23.8701; Longitude: 151.2216", 
-       x = "Wind Direction", 
-       y = "Residuals")
-
-
-
-
-
-
-
-
-
-
-
-
-
-## ==================== ## 
-## Further visualisation::openair package
-## ==================== ## 
-# polar plot
-polarPlot(air.quality.clinton, pollutant = 'pm2.5', resolution="fine")
-#
-polarPlot(air.quality.clinton, pollutant = 'pm2.5', type="time")
-polarPlot(air.quality.clinton, pollutant = 'pm2.5', hemisphere = "southern", type="season")
-polarPlot(air.quality.clinton, pollutant = 'pm2.5', type="weekend")
-polarPlot(air.quality.clinton, pollutant = 'pm2.5', type=c("season", "weekday"))
-
-polarPlot(air.quality.clinton,
-          resolution="fine",
-          pollutant="pm2.5",
-          col="jet",
-          key.position="bottom",
-          key.header="mean PM2.5 (ug/m3)",
-          key.footer=NULL,
-          ylab = "Wind Speed (m/s)",
-          main = "Polar plot of mean of PM2.5 concentration in all direction")
-
-
-# Wind rose, showing how wind speed and wind direction conditions vary by year. 
-windRose(air.quality.clinton)
-windRose(air.quality.clinton, type="month")
-
-# Pollution rose 
-pollutionRose(air.quality.clinton, pollutant = 'pm2.5')
-# e.g. 'hour', 'weekday', 'month', 'daylight' (to analyse data by daytime/nighttime).
-pollutionRose(air.quality.clinton, pollutant = 'pm2.5', type = 'season')
-pollutionRose(air.quality.clinton, pollutant = 'pm2.5', type = 'daylight')
-
-# First, we choose to deseasonalise the data, 
-# then we choose to plot percentiles (the 5th, 50th, 75th and 95th), 
-# then we set type to 'wd'. 
-smoothTrend(air.quality.clinton, pollutant = "pm2.5", deseason = TRUE, statistic = "percentile", percentile = c(25, 50, 75, 95), type = "wd")
-
-# percentileRose
-percentileRose(air.quality.clinton,pollutant="pm2.5", smooth=TRUE)
-
-percentileRose(air.quality.clinton,pollutant="pm2.5",percentile=c(25,50,75,90,95,99,99.9),col="brewer1",key.position="right",smooth=TRUE)
-
-
-# an arrow can be shown for each day giving the vector-averaged wind direction.
-# the arrow can be scaled according to the wind speed to highlight both the direction and strength of the wind on a particular day,
-# which can help show the influence of meteorology on pollutant concentrations
-calendarPlot(air.quality.clinton, pollutant = "pm2.5")
-
-calendarPlot(air.quality.clinton, pollutant = "pm2.5", annotate = "ws", year = 2015, main="PM2.5 varies acoording to wind speed and wind direction in 2015")
-
-# Time plot
-timePlot(air.quality.clinton, pollutant = "pm2.5")
-
-
 # =========== ggmap ========= #
 # ggmap
 clinton = get_map(location = c(lon = 151.2216, lat = -23.8701), zoom = 16)
@@ -588,19 +489,6 @@ sensor_map <- ggmap(clinton, extent="device") +
        subtitle = "Site location: Latitude: -23.8701; Longitude: 151.2216", 
        x = "Longitude", 
        y = "Latitude")
-
-# satelite map layer
-sensor_satelite_map <- ggmap(clinton.satelite, extent="device") + 
-  geom_point(aes(x=151.2216, y=-23.8701), color="red", size=7, alpha=0.05) +
-  theme_bw() +
-  annotate("text", x=151.2216, y=-23.8701, label = "Sensor\nlocation", colour = I("red"), size = 3.5) +
-  labs(title = "Instrument location at Clinton", 
-       subtitle = "Site location: Latitude: -23.8701; Longitude: 151.2216", 
-       x = "Longitude", 
-       y = "Latitude")
-
-
-
 
 
 # save objects --------------------

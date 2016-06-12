@@ -57,7 +57,9 @@ opts_chunk$set(tidy.opts=list(width.cutoff=60))
 <!-- What is the scientific question being addressed? (1-2 sentences) Provide a concise statement of it. -->
 <!-- Note: Why do we care about this analysis? Motivate the study. -->
 <!-- Note: What is the question we're answering with our analysis? -->
-What influence do meteorological measurements such as wind speed and wind direction have on the quality of air, particularly concentrations of PM~2.5~?
+PM~2.5~ is particulate matter with an equivalent aerodynamic diameter of 2.5 micrometres or less, and generally describe as fine particles. Fine particle like PM~2.5~ can be drawn deep into lungs, bypassing nose and mouth. Because of this, continuously over exposed it can cause bad effects and diseases to human health such as aggravation of asthma or other respiratory system damages. Elderly and children are among those who face higher risk. However, PM~2.5 are very light and tiny, that make it very easy to disturb by wind or carry within wind current.
+
+This study is to investigate what influence do meteorological measurements such as wind speed and wind direction have on the quality of air, particularly concentrations of PM~2.5~?
 
 ***
 ## 2. \textcolor{blue}{Methods}
@@ -66,13 +68,6 @@ What influence do meteorological measurements such as wind speed and wind direct
 <!-- 7: Concise and logical presentation of models, with excellent visual presentations that add insight, followed by explicit and well-defined linkage to measurements and design. -->
 ### The scientific conceptual model
 <!-- Is there a general theory being tested in a specific situation? Or is this a pioneering analysis? -->
-
-
-
-
-
-
-### Diagram
 <!-- Draw a conceptual model diagram showing how your variables of interest are related. Write a brief description (2-4 sentences) of how and why you believe the explanatory variables may influence the response variable (cite any publications you use). -->
 ```{r, echo=FALSE, fig.cap=' Visual conceptual model of how PM~2.5~ concentration in the air varies according to wind speed and wind direction', fig.width=10, fig.height=10}
 library(DiagrammeR)
@@ -124,7 +119,6 @@ For instance, if there is a forest fire happening at the south west of our curre
 There is no specified functional form from a scientific law to describe the influence of wind speed and wind direction affect the concentration of PM~2.5~ in the air, so linear terms is used in this model.
 
 
-
 ### The quatitative model
 <!-- Specify how each element of the scientific conceptual model is to be quantified, whether it is a variable or fixed in the experiment. Express the model in words and in an equation. Use the model as a basis for selecting the measurements and the experimental design. Provide a clear statement of the quantitative methods to be used. -->
 <!-- Note: what is the functional form of the regression model(s) being investigated? (at this point there should be no parameter values reported, because we haven't even seen the data yet!) -->
@@ -152,11 +146,13 @@ Variables & symbols on equation (\ref{eq:1}):
 **Formulate a hypothesis:**
 $$
 \begin{aligned}
-H_0 : \beta_1 &= 0\\
-H_1 : \beta_1 &\neq 0
+H_0 : \beta_j, \gamma_k &= 0\\
+H_1 : \beta_j, \gamma_k &\neq 0
 \end{aligned}
 $$  
 
+**Significant value**
+$\alpha$ = 0.05
 
 ***
 ## 3. \textcolor{blue}{Data}
@@ -180,7 +176,8 @@ air.quality.clinton.raw <- read.csv(file=url, as.is=T, head=T)
 ```
 
 
-```{r 'dataprep', echo=FALSE, eval=FALSE}
+Data preparation before analysis
+```{r 'dataprep', echo=TRUE, eval=FALSE, tidy=TRUE}
 air.quality.clinton.raw$Date <- dmy_hm(paste(air.quality.clinton.raw$Date, air.quality.clinton.raw$Time))
 # Lubridate to add few extra colume: month, day_of_week
 library(lubridate)
@@ -235,7 +232,7 @@ kable(head(air.quality.clinton), caption = "First 6 row of the final dataset.")
 ### Data dictionary
 <!-- list each variable, a description, units, permissible range and any transformation required; -->
 
-**Data dictionary - variables**
+Data dictionary - variables
 
 Abbreviation  | Variable  | Description | Units | Permissible range
 ------------- | ------------- | ------------- | ------------- | -------------
@@ -247,13 +244,12 @@ Table: Data dictionary listed with abbreviations, descriptions, units, permissib
 
 The final data set comprises time series of wind speed and direction; and PM~2.5~ readings. All updated hourly over the period from 1st January to 31st December 2015, recorded at Clinton, Gladstone Queensland (Latitude: -23.8701; Longitude: 151.2216).
 
-```{r sensor, echo=FALSE, fig.align='center', fig.cap='Location of the physical sennsing instrument at Clinton.'}
+```{r sensor, echo=FALSE, fig.align='center', fig.cap='Location of the physical sennsing instrument at Clinton, Gladstone QLD.'}
 sensor_map
 ```
 
 ### Metadata 
 <!-- including source (custodian), experimental design and accuracy. -->
-
 The dataset is released under a Creative Commons Attribution 3.0 Australia (CC BY) licence.
 [![Creative Commons Attribution](https://www.qld.gov.au/assets/v2/images/licences/by-80x15.png)](https://creativecommons.org/licenses/by/3.0/au/).
 
@@ -265,7 +261,6 @@ The dataset is released under a Creative Commons Attribution 3.0 Australia (CC B
     + Wind direction, $degTN$
 
 2. **PM~2.5~:** Particles as PM~2.5~ means particulate matter with an equivalent aerodynamic diameter of 2.5 micrometres or less. The suspended particular matter - PM~2.5~ concentrations are measured by Dichotomous Tapered Element Oscillating Balance (TEOM) Model 1405-DF fitted with Filter Dynamics Measurement System (FDMS) operated in accordance with Method 9.13, Australian Standards Methods for Pollutant Monitoring (AS/NZS 3580.9.13).
-\newline
 The FDMS system compensates for the loss of semi-volatile components from the collected particulate matter. Reported concentrations are uncorrected instrument output values and calculated from running 1-hour average concentrations updated at six minute intervals. Negative hourly PM~2.5~ concentrations down to -5$\mu g/m^3$  resulting from instrument noise at low particle concentrations are reported.
   + **Measurement units:** micrograms per cubic metre ($\mu g/m^3$)
 
@@ -282,48 +277,54 @@ There is no specified functional form from a scientific law to describe the infl
 <!-- Note: What does the data look like? Numerical summaries. Graphical summaries. -->
 
 
+```{r, echo=TRUE, eval=FALSE}
+summary(air.quality.clinton[,c(6,8,9)])
+```
 ```{r, echo=FALSE, results='asis'}
-knitr::kable(summary(air.quality.clinton[,c(5,6,8)]), caption="summary of explanatory variables and outcome variable")
+knitr::kable(summary(air.quality.clinton[,c(6,8,9)]), caption="Numerical summaries of explanatory variables and outcome variable")
 ```
 
 
-<!-- histograms/plots of key variables -->
-
-PM~2.5~ is logarithm transformed to get rid of skew results.
-```{r 'pm_histograms', echo=FALSE, fig.align='center', fig.cap='blank'}
+Note that raw PM~2.5~ data is logarithm transformed to get rid of some negative readings and correcting overall skew results.
+```{r 'pm_histograms', echo=FALSE, fig.align='center', fig.cap='Histogram showing the variation in outcome variable, both PM2.5 and log PM2.5 '}
 grid.arrange(pm1, pm2, ncol=2)
 ```
 
-How many observations fall on each wind category. What the most common wind direction are?
-```{r 'exploratory1', echo=FALSE, fig.align='center', fig.cap='blank'}
+
+How many observations fall on each wind category? What the most common wind direction are?
+```{r 'exploratory1', echo=FALSE, fig.align='center', fig.cap='Graph showing the variation in one explanatory variable, Wind Direction'}
 wind_direction.pie
 ```
+Figure 4 shows that most commonly wind came from East and South Eastern, on the other hand, there are very less wind come from West direction. Wind blowing from different direction can cause dispersal of air pollutants or carry within pollutants from emission source.
 
-```{r 'exploratory2', echo=FALSE, fig.align='center', fig.cap='blank'}
+
+```{r 'exploratory2', echo=FALSE, fig.align='center', fig.cap='Histogram showing the variation in another explanatory variable, Wind Speed'}
 ws.histogram
 ```
+Figure 5 shows that the wind speed distribution in the observation data. The most common wind speed is around 2 meter per seconds, light winds.
 
-```{r 'exploratories', echo=FALSE, fig.align='center', fig.cap='blank'}
+```{r 'exploratories', echo=FALSE, fig.align='center', fig.cap='Bar plot showing the correlation of both explanatory variable, Wind Direction and Wind Speed.'}
 ws_wd.plot
 ```
+In figure 6, clearly the median show that wind from Eastern and North Eastern blow stronger compared to others.
 
 
 ```{r 'cor1', echo=FALSE, fig.align='center', fig.cap='blank'}
 pm_wd.plot
 ```
-The median PM~2.5~ from North is higher than the other one from South, which might indicate that there is more air polution when the wind is blowing from the north than the south.
+The median PM~2.5~ from North is higher than the others which might indicate that there is more air polution when the wind is blowing from the north than the other directions.
 
 
 ```{r 'cor2', echo=FALSE, fig.align='center', fig.cap='blank'}
 pm_ws.plot
 ```
+Figure 8 shows that plotting single variable, wind speed alone has very low correlation with PM2.5 data, which then suggest there are others factors in the system might explain more the variability, for example the wind direction.
+
 
 ```{r 'cor3', echo=FALSE, fig.align='center', fig.cap='blank'}
 pm_ws_wd.plot
 ```
-
-
-
+Figure 9 showing how PM~2.5~ varies with both of Wind Speed and 8 differnt Wind Directions. Wind from South and South West seem to have negative correlation with PM~2.5.
 
 
 ### Quantitative analysis 
@@ -331,87 +332,98 @@ pm_ws_wd.plot
 
 <!-- Note: What are the results from fitting the model(s)? -->
 
-Fit 6 models as follow:
-1. log.pm2.5 ~ ws
-2. log.pm2.5 ~ wd.label
-3. log.pm2.5 ~ ws+wd.label
-4. log.pm2.5 ~ ws:wd.label
-5. log.pm2.5 ~ wd.label + ws:wd.label
-6. log.pm2.5 ~ ws + wd.label + ws:wd.label
+Fit 6 models as below:
 
-6 models to be fit to explore effect from different paramenters and any extra variability is explaining by adding extra terms or parameters.
+* Model 1, log.pm2.5 ~ ws
+* Model 2, log.pm2.5 ~ wd.label
+* Model 3, log.pm2.5 ~ ws+wd.label
+* Model 4, log.pm2.5 ~ ws:wd.label
+* Model 5, log.pm2.5 ~ wd.label + ws:wd.label
+* Model 6, log.pm2.5 ~ ws + wd.label + ws:wd.label
 
-Model 1
+6 models to be fit to explore effect from different paramenters and any extra variability is explaining by adding extra terms or extra parameters.
+
+Model 1  
+The first model is log PM~2.5~ only predicted by Wind Speed (ws).
 ```{r 'model1'}
 lm.pm_ws <- lm(data=air.quality.clinton, log.pm2.5 ~ ws)
 ```
-
-Model 2
+  
+Model 2  
+The second model is log PM~2.5~ only predicted by Wind Direction (wd.label).
 ```{r 'model2'}
 lm.pm_wd <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label - 1)
+# Below is same model without setting the intercept to 0. For R2 and ANOVA
 lm.pm_wd.intercept <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label)
 ```
-
-Model 3
+  
+Model 3  
+The third model is log PM~2.5~ regressed on both explanatory variables, Wind Speed and Wind Direction.
 ```{r 'model3'}
 lm.pm_ws_wd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws+wd.label - 1)
+# Below is same model without setting the intercept to 0. For R2 and ANOVA
 lm.pm_ws_wd.intercept <- lm(data=air.quality.clinton, log.pm2.5 ~ ws+wd.label)
 ```
-
-Model 4
+  
+Model 4  
+The fourth model is log PM~2.5~ regressed on only the interaction terms of both explanatory variables, Wind Speed and Wind Direction.
 ```{r 'model4'}
 lm.pm_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws:wd.label -1)
+# Below is same model without setting the intercept to 0. For R2 and ANOVA
 lm.pm_wswd.intercept <- lm(data=air.quality.clinton, log.pm2.5 ~ ws:wd.label)
 ```
-
-Model 5
-Fit a linear model of log PM~2.5~ regressed on Wind direction and interaction with Wind speed
-```{r 'model5'}
+  
+Model 5  
+The fifth model is log PM~2.5~ regressed on Wind Direction and the interaction terms of both explanatory variables, Wind Speed and Wind Direction.
+```{r 'model5', tidy=TRUE}
 lm.pm_wd_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label-1 + ws:wd.label)
+# Below is same model without setting the intercept to 0. For R2 and ANOVA
 lm.pm_wd_wswd.intercept <- lm(data=air.quality.clinton, log.pm2.5 ~ wd.label + ws:wd.label)
 ```
-
-Model 6
+  
+Model 6  
+The sixth model is log PM~2.5~ regressed on both Wind Direction, Wind Speed and the interaction terms of both explanatory variables, Wind Speed and Wind Direction. This is the most complex model by far.
 ```{r 'model6'}
 lm.pm_ws_wd_wswd <- lm(data=air.quality.clinton, log.pm2.5 ~ ws*wd.label-1)
+# Below is same model without setting the intercept to 0. For R2 and ANOVA
 lm.pm_ws_wd_wswd.intercept <- lm(data=air.quality.clinton, log.pm2.5 ~ ws*wd.label)
 ```
 
 
-Coefficient of determination, R^2^ of all 6 models
+Coefficient of determination, R^2^ value of all 6 models
+```{r, eval=FALSE}
+library(broom)
+# R2 for model 6, repeat for other model
+glance(lm.pm_ws_wd_wswd.intercept)$r.squared
+```
+
+Check coefficient of determination, R^2^ value for each fitted linear models using `glance()` from `broom` library and results tabulated as below:
 ```{r, echo=FALSE, results='asis'}
-kable(models.fitness.df, caption="R2 for all models")
+kable(models.fitness.df, caption="Coefficient of determination for all models")
 ```
 
+Table 4 shows that model 5 and model 6 both has the exactly the same R~2~ value even though model 6 has extra term. It seems like the extra term (Wind speed) doesn't explain any extra variability in the data.  
 
-**Formulate a hypothesis test about models:**
-H~0~ : There is no increase in variability explained by the more complex model 5, with extra term (wind direction)
+However, we are going to use F test via the `anova()` function to test whether including the Wind Speed (ws) term improve how much variation in log PM~2.5~ is explained when compared to the model without the Wind Speed (ws) term.  
 
-Significant value set as $\alpha$ = 0.05.
+Formulate a hypothesis test about models:  
 
+H~0~ : There is no increase in variability explained by the more complex model 6, with extra term (wind speed)  
 
-
-
-**Interpretation of ANOVA for regression models**
-The p value from this hypothesis test therefore represents the probability of obtaining an F statistic at least as big as what was seen if the restricted model explained the same amount of variation as the full model. 
-
-Rejecting the null hypothesis leads us to conclude that the inclusion of the extra terms in the full model explains more variation than if we had not included these terms.
+Significant value set as $\alpha$ = 0.05.  
 
 
-```{r}
-# model 4 nested inside of model 5
-anova(lm.pm_wswd.intercept, lm.pm_wd_wswd.intercept)
-```
-
-```{r}
-# Model 5 vs. Model 6, model 5 nested in model 6
+```{r 'anova2', echo=TRUE, eval=FALSE}
+# Model 1: log.pm2.5 ~ wd.label + ws:wd.label
+# Model 2: log.pm2.5 ~ ws * wd.label
 anova(lm.pm_wd_wswd.intercept, lm.pm_ws_wd_wswd.intercept)
 ```
-That is, does including an interaction term explain any further variation than changes in Wind direction and Wind speed would account for by themselves?
+```{r, echo=FALSE}
+pander::pander(anova(lm.pm_wd_wswd.intercept, lm.pm_ws_wd_wswd.intercept))
+```
 
-
-
-
+**Interpretation of ANOVA for regression models**
+From table 5, model 5 and model 6 both has 7873 residual degrees of freedom. The *p* value is not show on the `anova()` result probably due to very tiny differnt between both RSS (regression sum of squared). Therefore, we conclude that model 6 explains slightly more of the varibility (really tiny RSS) but not so much so that the Wind Speed term is necessary. In result, we are unable to reject the null hypothesis, Model 5 the simpler model is the better model choice.
 
 
 ### Estimate model parameters
@@ -419,29 +431,26 @@ That is, does including an interaction term explain any further variation than c
 <!-- Note: Estimates, confidence intervals and hypothesis tests -->
 
 Estimates of the parameters in this model and their 95% confidence intervals
-```{r, eval=FALSE, echo=TRUE, tidy=TRUE}
-summary(lm.pm_wd_wswd)
-```
-
-95% Confident interval
 ```{r, echo=TRUE, eval=FALSE}
 tidy(lm.pm_wd_wswd, conf.int = T)
 ```
 ```{r, echo=FALSE, results='asis'}
-kable(tidy(lm.pm_wd_wswd, conf.int = T), caption = "Confident intervals of estimated parameters.")
+kable(tidy(lm.pm_wd_wswd, conf.int = T), caption = "Confident intervals of estimated parameters of model 5.")
 ```
 
+From the *p* value of table 7, except `wd.labelN:ws`, `wd.labelNE:ws`, `wd.labelE:ws`, `wd.labelW:ws`, `wd.labelNW:ws`, all the other estimated parameters has shown statistical significant on explaining varibility of the data. This 5 statistical insignificant estimated parameters also shown to have include `0` in their 95% confident intervals.  
 
 
 ### Assess model fit
 <!-- Use a goodness-of-fit statistic or other suitable measure -->
 
-Coefficient of determination, R^2^, for thess models
-```{r, echo=FALSE, results='asis'}
-kable(models.fitness.df, caption="R2 for all models")
+Goodness of fit plot
+```{r, echo=FALSE, eval=TRUE, fig.align='center', fig.cap='Graph shows how much do our modelled value look like our observed values.'}
+goodnessplot
 ```
+Figure 10 shown how much do our modelled values look like our observed log PM~2.5~ values. They are expected them to fall very close to a straight line if the modelled values is very good explaining variability of the observed data.
 
-
+At the end of the line, there is wide spread of modelled value along the line. This incompactible suggested that there are still alot of variability haven't been explained by our explanatory variables.
 
 
 ### Model checking
@@ -454,48 +463,31 @@ kable(models.fitness.df, caption="R2 for all models")
 df.fort.pm_wd_wswd <- fortify(lm.pm_wd_wswd)
 head(df.fort.pm_wd_wswd)
 ```
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(df.fort.pm_wd_wswd), caption="fortify of model 5")
+```
 
 
-```{r, echo=FALSE, eval=TRUE, fig.align='center', fig.cap='blank'}
+```{r, echo=FALSE, eval=TRUE, fig.align='center', fig.cap='Histogram of the residuals with density on the y axis with assumption of normal distribution of the residuals '}
 Resid.histogram
 ```
-The residuals look more normally distributed for model 3 and model 4, but models 1 and 2 look a little more spread out. We don’t have very good resolution of the residuals, but this is mainly because we don’t have that much data, only 16 observations, so this is OK.
-
-From here we can see that our plot of the residuals looks pretty normal, and that is a good thing as it is one of the model assumptions! Huzzah!
+The residuals look approximately normally distributed, but look a little skewed and out of shape around the mean.  
 
 
-
-
-Homogeneity of errors
-```{r, echo=FALSE, eval=TRUE, fig.align='center', fig.cap='blank'}
+```{r, echo=FALSE, eval=TRUE, fig.align='center', fig.cap='Homogeneity of errors of model 5'}
 homoplot
 ```
-Do the residuals look like they have a mean of zero and constant variance as we move from left to right along the fitted values axis?
-Do these plots indicate that the residuals are normally distributed and homogenous in their variance?
+The residuals doesn't look like they have a mean of zero and constant variance as we move from left to right along the fitted values axis. This suggested that maybe the residuals are not residuals are normally distributed and homogenous in their variance.  
 
-We can see here that for both models the smaller fitted values (some of which are negative!) have residuals which are all greater than zero (indicating underprediction), that the fitted values in the 25-50 range are being overpredicted (as the residuals are negative) and that for the larger fitted values there is substantially greater variance in the residuals.
-
+It look like there’s many unexplained variation in the residuals. The shape of the plot looks alot like fan out as we move from left to right along the fitted value axis. Most of the residuals concentrate around 1 to 1.5 fitted value.
 
 
-QQ plot
-```{r, echo=FALSE, eval=TRUE, fig.align='center', fig.cap='blank'}
+```{r, echo=FALSE, eval=TRUE, fig.align='center', fig.cap='Quantile-quantile (QQ) plot of the standardised residuals.'}
 qqplot
 ```
-Do these residuals look approximately Normally distributed?
 
-It looks like these residuals are not Normally distributed due to the skewness from the histograms and the departure from the geom_abline() line sample = theoretical. Perhaps there is some structure to the unexplained variation in the residuals.
+QQ plot from figure 13 shows that these residuals are not really well Normally distributed due to the skewness from the histograms and the departure from the geom_abline() line sample = theoretical. The sample residuals are less positive than expected as they are way below the line. Perhaps there is some structure to the unexplained variation in the residuals.
 
-For model 1., it looks like the model is over-predicting the lower (peak around -15), and under-predicting upper values (points around 100). This suggests that there is some unexplained variation!
-
-
-
-Goodness of fit plot
-```{r, echo=FALSE, eval=TRUE, fig.align='center', fig.cap='blank'}
-goodnessplot
-```
-How much do our modelled values, yhat, look like our observed values, *y~i~*
-Expect them to fall very close to a straight line.
-Are there any records where the observed PM~2.5~ are either all above or all below where we would expect them to be from the model? (i.e. where the y~i~ are all bigger or all smaller than the yhat~i~)
 
 
 ***
@@ -507,32 +499,24 @@ Are there any records where the observed PM~2.5~ are either all above or all bel
 <!-- Provide a plain English interpretation that gives a holistic (overall) view of the results (1-3 paragraphs). -->
 <!-- Note: What do our results mean in terms of the question of interest? Use the results from the analysis section to back up your claims. -->
 
+It's very clear that wind speed and wind direction has play a role in explaining log PM~2.5~ based on our fitted model. The estimated parameters are statistical significant under our significal value 0.05.  
 
+However, the fitted model explain not very much of the variability of the data based on low R^2^ value and the model ND assumption is not hold very well when we look at the residuals. That is to say, this model while is the best fitted so far, but its not enough to make prediction or inferences on future PM~2.5~ value.
 
-### Link back 
+<!-- ### Link back  -->
 <!-- to the Question: provide a plain English interpretation of the model and what it means, in terms of the original question (1-2 sentences). -->
 <!-- Note: Are there any problems with our models? How would we fix them if we could? -->
 
+From the result, it suggested that thare is other factors in the system for example temperature might play a role in further predict the PM~2.5~ concentration in the air.  
+
+This study answer the original question of whether meteorological measurements such as wind speed and wind direction have on the quality of air, particularly concentrations of PM~2.5~. Further include other measurement might improve the overall explanation of variability.
 
 
-### Compare
+<!-- ### Compare -->
 <!-- to other relevant findings -->
 <!-- Note: What have others done in the same field? Do our results lead to the same conclusions? -->
 
 
-
-
-```{r, echo=FALSE, fig.cap='Global average across Oceean Health Index goals.', fig.width=5, fig.height=5}
-polarPlot(air.quality.clinton,
-          resolution="fine",
-          pollutant="pm2.5",
-          col="jet",
-          key.position="bottom",
-          key.header="mean PM2.5 (ug/m3)",
-          key.footer=NULL,
-          ylab = "Wind Speed (m/s)",
-          main = "Polar plot of mean of PM2.5 concentration in all direction")
-```
 
 
 ***
@@ -541,20 +525,16 @@ polarPlot(air.quality.clinton,
 <!-- ############################################ -->
 
 ```{r 'fetchCit', echo=FALSE, results='hide', message=FALSE, warning=FALSE}
-citep(citation("ggmap"))
 citep(citation())
-citep(citation("openair"))
 citet("Dependence of urban air pollutants on meteorology")
-citet("Conditional bivariate probability function for source identification")
+citep(citation("ggmap"))
+# citep(citation("openair"))
+# citet("Conditional bivariate probability function for source identification")
 ```
-
 
 All analyses were conducted using the statistical software program, R [@R_Core_Team_2016].
 
 D. Kahle and H. Wickham. [@Kahle_2013]: Spatial Visualization with ggplot2
-
-Carslaw D and Ropkins K (2016). [@Carslaw_2012]: Open-source tools for the analysis of air
-pollution data.
 
 
 ```{r 'bib', echo=FALSE, message=FALSE}
